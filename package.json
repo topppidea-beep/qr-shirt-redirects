@@ -1,0 +1,7 @@
+{
+  "name": "qr-shirt-redirects",
+  "version": "1.0.0",
+  "description": "QR Code Redirect Service",
+  "main": "api/r/[code].js",
+  "private": true
+}
