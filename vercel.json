@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "name": "qr-shirt-redirects",
+  "regions": ["fra1"],
+  "rewrites": [
+    {
+      "source": "/r/:code",
+      "destination": "/api/r/[code]"
+    }
+  ]
+}
