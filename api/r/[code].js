@@ -1,24 +1,16 @@
-export default async function handler(req) {
-  // Edge Runtime: URL manuell parsen
-  const url = new URL(req.url);
-  const pathParts = url.pathname.split('/');
-  const code = pathParts[pathParts.length - 1];
+// Node.js Runtime (stabiler!)
+export default async function handler(req, res) {
+  const { code } = req.query;
   
   const SUPABASE_URL = process.env.SUPABASE_URL;
   const SUPABASE_KEY = process.env.SUPABASE_ANON_KEY;
   
   if (!SUPABASE_URL || !SUPABASE_KEY) {
-    return new Response(JSON.stringify({ error: 'Server configuration error' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return res.status(500).json({ error: 'Server configuration error' });
   }
   
   if (!code || code.length < 3) {
-    return new Response(JSON.stringify({ error: 'Invalid QR code' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' }
-    });
+    return res.status(400).json({ error: 'Invalid QR code' });
   }
   
   try {
@@ -40,7 +32,7 @@ export default async function handler(req) {
     const data = await response.json();
     
     if (!data || data.length === 0) {
-      return new Response(`
+      return res.status(404).send(`
         <!DOCTYPE html>
         <html>
           <head>
@@ -72,16 +64,13 @@ export default async function handler(req) {
             </div>
           </body>
         </html>
-      `, {
-        status: 404,
-        headers: { 'Content-Type': 'text/html; charset=utf-8' }
-      });
+      `);
     }
     
     const relink = data[0];
     
     if (relink.status !== 'active') {
-      return new Response(`
+      return res.status(410).send(`
         <!DOCTYPE html>
         <html>
           <head>
@@ -111,19 +100,15 @@ export default async function handler(req) {
             </div>
           </body>
         </html>
-      `, {
-        status: 410,
-        headers: { 'Content-Type': 'text/html; charset=utf-8' }
-      });
+      `);
     }
     
-    // REDIRECT!
-    return Response.redirect(relink.current_target_url, 307);
+    return res.redirect(307, relink.current_target_url);
     
   } catch (error) {
     console.error('Redirect error:', error);
     
-    return new Response(`
+    return res.status(500).send(`
       <!DOCTYPE html>
       <html>
         <head>
@@ -149,28 +134,28 @@ export default async function handler(req) {
         <body>
           <div class="container">
             <h1>😕</h1>
-            <h2>Fehler: ${error.message}</h2>
+            <h2>Server Error</h2>
+            <p>${error.message}</p>
           </div>
         </body>
       </html>
-    `, {
-      status: 500,
-      headers: { 'Content-Type': 'text/html; charset=utf-8' }
-    });
+    `);
   }
 }
 
-export const config = {
-  runtime: 'edge',
-};
+// KEIN Edge Runtime Config mehr!
 ```
 
-**Speichern** → Commit
-
-Vercel deployed automatisch neu!
+**Wichtig:** Am Ende ist KEIN `export const config` mehr!
 
 ---
 
-## **Warte ~30 Sekunden, dann teste:**
+## **Speichern & Warten**
+
+Commit → Vercel deployed automatisch → Warte 30 Sekunden
+
+---
+
+## **Dann teste:**
 ```
 https://qr-shirt-redirects.vercel.app/r/test001
