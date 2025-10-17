@@ -1,4 +1,4 @@
-javascriptmodule.exports = async (req, res) => {
+module.exports = async (req, res) => {
   const code = req.query.code;
   
   if (!code) {
