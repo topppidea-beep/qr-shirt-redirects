@@ -71,28 +71,3 @@ module.exports = async (req, res) => {
     });
   }
 };
-```
-
-### **Schritt 2: Vercel Cache löschen**
-
-Nach dem Commit:
-
-1. Vercel → **Settings** → **General**
-2. Scrolle runter zu **"Reset Build Cache"**
-3. Klicke **"Reset"**
-4. Dann neues Deployment triggern
-
-### **Schritt 3: Force Redeploy**
-
-1. Vercel → **Deployments**
-2. Letztes Deployment → **⋮** (3 Punkte)
-3. **"Redeploy"**
-4. **WICHTIG:** Haken bei **"Use existing Build Cache"** ENTFERNEN!
-
----
-
-## **Alternative: Teste direkt die API Route**
-
-Öffne im Browser:
-```
-https://qr-shirt-redirects.vercel.app/api/r/test001
